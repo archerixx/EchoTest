@@ -118,6 +118,9 @@ namespace EchoTest.Services
                     streamFile,
                     body.MimeType); // the upload format
             request.Upload();
+
+            // remove file after upload
+            File.Delete(filePath);
             #endregion
 
         }
