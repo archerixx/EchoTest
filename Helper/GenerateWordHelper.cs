@@ -13,10 +13,10 @@ namespace EchoTest.Helper
             // Since Image does not exist inside Excel, has to be either picked up from internet from URL or from local drive
             var imageData = GetImageData("Assets\\CompanyName.png");
 
-            using (FileStream sw = File.Create(filePath)) //new FileStream("C:\\Users\\Zerin\\Documents\\Echo\\fileformat.docx", FileMode.OpenOrCreate, FileAccess.ReadWrite))//
+            using (FileStream sw = File.Create(filePath))
             {
                 // initialize document
-                XWPFDocument doc = new();
+                XWPFDocument doc = new();                
 
                 // first paragraph, place picture
                 AddPictureToDocument(ref doc, imageData);
@@ -170,60 +170,50 @@ namespace EchoTest.Helper
 
             // extract colums from rowData
             var columns = tableRowDataList.First().Values.Where(v => v.FormattedValue is not null).Count();
-            var columnsData = tableRowDataList.Select(r => r.Values.Where(v => v.FormattedValue is not null).ToArray()).ToArray(); //.Select(c => c.FormattedValue).ToArray();
+            var columnsData = tableRowDataList.Select(r => r.Values.Where(v => v.FormattedValue is not null).ToArray()).ToArray();
 
             // table
             var table = document.CreateTable(tableRowDataList.Count(), columns);
             table.Width = 5000;
-            table.SetCellMargins(100, 100, 100, 100);
+            table.SetCellMargins(100, 100, 100, 100); // spacing
             var tblLayout = table.GetCTTbl().tblPr.AddNewTblLayout();
             tblLayout.type = ST_TblLayoutType.@fixed;
-            //table.SetColumnWidth(0, (ulong)columnsData[0][0].EffectiveFormat.Padding.Right.Value);
 
             for (int i = 0; i < tableRowDataList.Count; i++)
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    // title cell
-                    if (i == 0)
-                    {
-                        var backgroundColor = columnsData[i][j].EffectiveFormat.BackgroundColor;
-                        var rgbString = string.Format("#{0}{1}{2}",
-                            ((int)(backgroundColor.Red * 255)).ToString("X2"),
-                            ((int)(backgroundColor.Green * 255)).ToString("X2"),
-                            ((int)(backgroundColor.Blue * 255)).ToString("X2"));
+                    var dataCell = table.Rows[i].GetCell(j);
+                    dataCell.GetParagraphArray(0).SpacingAfterLines = 1;
+                    dataCell.SetColor(GetHexString(columnsData[i][j].EffectiveFormat.BackgroundColorStyle.RgbColor));
 
-                        var titleCell = table.Rows[i].GetCell(j);
-                        titleCell.SetColor(rgbString);
-                        titleCell.GetParagraphArray(0).SpacingAfterLines = 1;
-                        var titleCellText = titleCell.GetParagraphArray(0).CreateRun();
-                        titleCellText.IsBold = true;
-                        titleCellText.SetText(columnsData[i][j].FormattedValue);
-                        titleCellText.FontFamily = columnsData[i][j].EffectiveFormat.TextFormat.FontFamily;
-                        titleCellText.FontSize = columnsData[i][j].EffectiveFormat.TextFormat.FontSize.Value;
-                        titleCellText.RemoveBreak();
+                    // VerticalAlignemnt, but does not match output doc format
+                    //dataCell.SetVerticalAlignment((XWPFTableCell.XWPFVertAlign)Enum.Parse(typeof(XWPFTableCell.XWPFVertAlign), columnsData[i][j].EffectiveFormat.VerticalAlignment));
+
+                    dataCell.SetBorderTop(XWPFTable.XWPFBorderType.SINGLE, 10, 0, GetHexString(columnsData[i][j].EffectiveFormat.Borders.Top.ColorStyle.RgbColor));
+                    dataCell.SetBorderLeft(XWPFTable.XWPFBorderType.SINGLE, 10, 0, GetHexString(columnsData[i][j].EffectiveFormat.Borders.Left.ColorStyle.RgbColor));
+                    dataCell.SetBorderBottom(XWPFTable.XWPFBorderType.SINGLE, 10, 0, GetHexString(columnsData[i][j].EffectiveFormat.Borders.Bottom.ColorStyle.RgbColor));
+                    dataCell.SetBorderRight(XWPFTable.XWPFBorderType.SINGLE, 10, 0, GetHexString(columnsData[i][j].EffectiveFormat.Borders.Right.ColorStyle.RgbColor));
+
+                    // if text is hyperlink
+                    if (columnsData[i][j].Hyperlink != null)
+                    {
+                        XWPFHyperlinkRun hyperlinkrun = CreateHyperlinkRun(dataCell.GetParagraphArray(0), columnsData[i][j].Hyperlink);
+                        hyperlinkrun.SetText(columnsData[i][j].FormattedValue);
+                        hyperlinkrun.SetColor(GetHexString(columnsData[i][j].EffectiveFormat.TextFormat.ForegroundColorStyle.RgbColor));
+                        if (columnsData[i][j].EffectiveFormat.TextFormat.Underline.Value)
+                            hyperlinkrun.Underline = UnderlinePatterns.Single;
+                        hyperlinkrun.IsBold = columnsData[i][j].EffectiveFormat.TextFormat.Bold.Value;
+                        hyperlinkrun.FontFamily = columnsData[i][j].EffectiveFormat.TextFormat.FontFamily;
+                        hyperlinkrun.FontSize = columnsData[i][j].EffectiveFormat.TextFormat.FontSize.Value;
                     }
                     else
                     {
-                        var dataCell = table.Rows[i].GetCell(j);
-                        dataCell.GetParagraphArray(0).SpacingAfterLines = 1;
-                        // if text is hyperlink
-                        if (columnsData[i][j].Hyperlink != null)
-                        {
-                            XWPFHyperlinkRun hyperlinkrun = CreateHyperlinkRun(dataCell.GetParagraphArray(0), columnsData[i][j].Hyperlink);
-                            hyperlinkrun.SetText(columnsData[i][j].FormattedValue);
-                            hyperlinkrun.SetColor("0000FF");
-                            hyperlinkrun.Underline = UnderlinePatterns.Single;
-                            hyperlinkrun.FontFamily = columnsData[i][j].EffectiveFormat.TextFormat.FontFamily;
-                            hyperlinkrun.FontSize = columnsData[i][j].EffectiveFormat.TextFormat.FontSize.Value;
-                        }
-                        else
-                        {
-                            var dataCellText = dataCell.GetParagraphArray(0).CreateRun();
-                            dataCellText.SetText(columnsData[i][j].FormattedValue);
-                            dataCellText.FontFamily = columnsData[i][j].EffectiveFormat.TextFormat.FontFamily;
-                            dataCellText.FontSize = columnsData[i][j].EffectiveFormat.TextFormat.FontSize.Value;
-                        }
+                        var dataCellText = dataCell.GetParagraphArray(0).CreateRun();
+                        dataCellText.SetText(columnsData[i][j].FormattedValue);
+                        dataCellText.IsBold = columnsData[i][j].EffectiveFormat.TextFormat.Bold.Value;
+                        dataCellText.FontFamily = columnsData[i][j].EffectiveFormat.TextFormat.FontFamily;
+                        dataCellText.FontSize = columnsData[i][j].EffectiveFormat.TextFormat.FontSize.Value;
                     }
                 }
             }
@@ -292,6 +282,17 @@ namespace EchoTest.Helper
              ).Id;
 
             return paragraph.CreateHyperlinkRun(rId);
+        }
+
+        private static string GetHexString(Google.Apis.Sheets.v4.Data.Color color)
+        {
+            if (color.Red is null || color.Green is null || color.Blue is null)
+                return string.Empty;
+
+            return string.Format("#{0}{1}{2}",
+                ((int)(color.Red * 255)).ToString("X2"),
+                ((int)(color.Green * 255)).ToString("X2"),
+                ((int)(color.Blue * 255)).ToString("X2"));
         }
 
         // Since Image does not exist inside Excel, has to be either picked up from internet from URL or from local drive

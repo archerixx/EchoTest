@@ -108,7 +108,7 @@ namespace EchoTest.Services
             body.Name = Path.GetFileName(filePath);
             //body.Capabilities = new CapabilitiesData { CanEdit = true };
             // Set what the end mime type will be
-            body.MimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            body.MimeType = "application/vnd.google-apps.document"; // google doc type
             byte[] byteArray = File.ReadAllBytes(filePath);
 
             MemoryStream streamFile = new MemoryStream(byteArray);
@@ -116,7 +116,7 @@ namespace EchoTest.Services
                 driveService.Files.Create(
                     body,
                     streamFile,
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"); // the upload format
+                    body.MimeType); // the upload format
             request.Upload();
             #endregion
 
