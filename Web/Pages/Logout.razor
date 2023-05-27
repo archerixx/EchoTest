@@ -1,0 +1,15 @@
+﻿@page "/Logout"
+@using Microsoft.Extensions.Configuration;
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Http.GetAsync($"{Configuration.GetSection("BaseUrl:Api").Value}/Document/Logout");
+
+        // Redirect to the home page
+        NavigationManager.NavigateTo("/");
+    }
+}

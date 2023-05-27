@@ -1,0 +1,25 @@
+{
+  "web": {
+    "client_id": "293025810351-pkl61g2bh8cdaajkqm1v3jbu6ereouuq.apps.googleusercontent.com",
+    "project_id": "echotest-387320",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "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",
+    "redirect_uris": [
+      "https://www.integromat.com",
+      "https://www.make.com",
+      "https://www.integromat.com/oauth/cb/google-restricted",
+      "https://echodocument-web.azurewebsites.net/.auth/login/google/callback",
+      "https://echodocument-api.azurewebsites.net/.auth/login/google/callback",
+      "https://echodocument-web.azurewebsites.net/authorize/",
+      "https://echodocument-api.azurewebsites.net/authorize/",
+      "https://echodocument-api.azurewebsites.net/singin-google",
+      "https://echodocument-web.azurewebsites.net/singin-google"
+    ],
+    "javascript_origins": [
+      "https://echodocument-api.azurewebsites.net",
+      "https://echodocument-web.azurewebsites.net"
+    ]
+  }
+}

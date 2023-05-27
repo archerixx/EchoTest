@@ -1,0 +1,141 @@
+﻿@page "/GoogleSheetToDocs"
+@using Domain.Dto;
+@using Microsoft.Extensions.Configuration;
+@using Microsoft.AspNetCore.Http;
+@using System.Net.Http.Headers;
+@inject HttpClient Http
+@inject IConfiguration Configuration
+@inject IHttpContextAccessor ContextAccessor
+
+<PageTitle>SheetToDoc</PageTitle>
+
+<h1>Generate Google Doc from Google Sheet</h1>
+
+@if (spreadsheets == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>Please select the Spreadsheet that you want to convert:</p>
+
+    <div class="container">
+        <select @bind="selectedSheet" class="sheet-select">
+            @foreach (var spreadsheet in spreadsheets)
+            {
+                <option value="@spreadsheet.Id">@spreadsheet.Name</option>
+            }
+        </select>
+    </div>
+
+    <p><br>In case you need to share your document with someone, please add their email addresses here</p>
+
+    <div class="container">
+        <input @bind="inputValue" @onkeydown="HandleKeyDown" @ref="inputRef" />
+        <button @onclick="AddTag">Add email address</button>
+        <div>
+            @foreach (var tag in tags)
+            {
+                <span class="tag">@tag</span>
+            }
+        </div>
+
+        <style>
+            .tag {
+                display: inline-block;
+                padding: 2px 6px;
+                margin: 4px;
+                background-color: #f0f0f0;
+                border-radius: 4px;
+            }
+        </style>
+    </div>
+
+    <div class="container">
+        <div>
+            @if (isGenerating)
+            {
+                <span>Generating...</span>
+            }
+            else
+            {
+                <button @onclick="GenerateGoogleDocument">Generate</button>
+            }
+        </div>
+    </div>
+
+    <div class="container">
+        @if (!String.IsNullOrEmpty(googleDocUrl))
+        {
+            <a href="@googleDocUrl" target="_blank">Link to Google Docs</a>
+        }
+    </div>
+}
+
+@code {
+    // spreadsheet select
+    private string? selectedSheet = string.Empty;
+    private string? googleDocUrl;
+    private bool isGenerating = false;
+    private IEnumerable<SpreadSheetDto>? spreadsheets;
+    private string? apiUrl;
+
+    // input
+    private List<string> tags = new List<string>();
+    private string inputValue = string.Empty;
+    private ElementReference inputRef;
+
+    // email input
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(inputValue))
+        {
+            AddTag();
+            inputValue = string.Empty;
+            inputRef.FocusAsync();
+        }
+    }
+    private void AddTag()
+    {
+        if (!string.IsNullOrWhiteSpace(inputValue))
+        {
+            tags.Add(inputValue);
+        }
+    }
+
+    // onInit select spreadsheet
+    protected override async Task OnInitializedAsync()
+    {
+        apiUrl = Configuration.GetSection("BaseUrl:Api").Value;
+
+        var token = ContextAccessor.HttpContext.Request.Cookies["MyCookie"];
+
+        Http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        spreadsheets = await Http.GetFromJsonAsync<IEnumerable<SpreadSheetDto>>($"{apiUrl}/Document/GoogleSheet");
+        selectedSheet = spreadsheets?.FirstOrDefault()?.Id; // Set the initial selected value here
+    }
+
+    // generate docs
+    public async Task GenerateGoogleDocument()
+    {
+        isGenerating = true;
+        StateHasChanged(); // Trigger UI update
+
+        var sharedWith = String.Join(",", tags);
+        var token = ContextAccessor.HttpContext.Request.Cookies["MyCookie"];
+
+        Http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+        var documentId = await Http.GetStringAsync($"{apiUrl}/Document/GenerateGoogleDoc?googleSheetUrl={selectedSheet}&shareWith={sharedWith}");
+        googleDocUrl = GeneratedDocsUrl(documentId);
+    }
+
+    // google docs url
+    public string GeneratedDocsUrl(string id)
+    {
+        isGenerating = false;
+        StateHasChanged(); // Trigger UI update
+        return $"https://docs.google.com/document/d/{id}";
+    }
+}
