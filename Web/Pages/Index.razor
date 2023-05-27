@@ -11,13 +11,13 @@
 <h1>Welcome to Google Docs generator</h1>
 
 <p>In order to use this Generator, you will have to login with you GoogleAccount and allow access to Drive</p>
-<p>Please navigate to GoogleSheetToDocs in order to try out this generator</p>
+<p>Please navigate to GoogleSheetToDocs to try it out</p>
 
-<AuthorizeView>
+@*<AuthorizeView>
     <Authorized>
         <p>You are now logged in as @context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value</p>
     </Authorized>
     <NotAuthorized>
         <a href="auth/google-login" >Gogle login</a>
     </NotAuthorized>
-</AuthorizeView>
+</AuthorizeView>*@

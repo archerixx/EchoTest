@@ -21,8 +21,6 @@ namespace Api.Controllers
         {
             try
             {
-                var a = HttpContext.Request.Headers.FirstOrDefault(v => v.Key == "Authorization");
-
                 var docuemntId = documentService.GenerateAndUploadGoogleDocument(googleSheetUrl, shareWith);
                 if (!String.IsNullOrEmpty(docuemntId))
                     return Ok(docuemntId);
@@ -40,8 +38,6 @@ namespace Api.Controllers
         {
             try
             {
-
-                var a = HttpContext.Request.Headers.FirstOrDefault(v => v.Key == "Authorization");
                 return Ok(documentService.GetGoogleSheet());
             }
             catch (Exception ex)
@@ -56,8 +52,6 @@ namespace Api.Controllers
         {
             try
             {
-
-                var a = HttpContext.Request.Headers.FirstOrDefault(v => v.Key == "Authorization");
                 documentService.LogoutFromGoogleAPI();
                 return Ok();
             }

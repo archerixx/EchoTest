@@ -1,11 +1,8 @@
 ﻿@page "/GoogleSheetToDocs"
 @using Domain.Dto;
 @using Microsoft.Extensions.Configuration;
-@using Microsoft.AspNetCore.Http;
-@using System.Net.Http.Headers;
 @inject HttpClient Http
 @inject IConfiguration Configuration
-@inject IHttpContextAccessor ContextAccessor
 
 <PageTitle>SheetToDoc</PageTitle>
 
@@ -108,10 +105,6 @@ else
     {
         apiUrl = Configuration.GetSection("BaseUrl:Api").Value;
 
-        var token = ContextAccessor.HttpContext.Request.Cookies["MyCookie"];
-
-        Http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
         spreadsheets = await Http.GetFromJsonAsync<IEnumerable<SpreadSheetDto>>($"{apiUrl}/Document/GoogleSheet");
         selectedSheet = spreadsheets?.FirstOrDefault()?.Id; // Set the initial selected value here
     }
@@ -123,10 +116,6 @@ else
         StateHasChanged(); // Trigger UI update
 
         var sharedWith = String.Join(",", tags);
-        var token = ContextAccessor.HttpContext.Request.Cookies["MyCookie"];
-
-        Http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
         var documentId = await Http.GetStringAsync($"{apiUrl}/Document/GenerateGoogleDoc?googleSheetUrl={selectedSheet}&shareWith={sharedWith}");
         googleDocUrl = GeneratedDocsUrl(documentId);
     }

@@ -15,7 +15,7 @@ namespace Api.HelperMethods
     {
         private static UserCredential GetGoogleApiCredential()
         {
-            using (var stream = new FileStream("client_web.json", FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
             {
                 var currDir = Directory.GetCurrentDirectory();
                 string credPath = Path.Join(currDir);
@@ -32,21 +32,14 @@ namespace Api.HelperMethods
 
         public static void Logout()
         {
-            try
-            {
-                // delete cashed credentials
-                var currDir = Directory.GetCurrentDirectory();
-                string credPath = Path.Join(currDir, "Google.Apis.Auth.OAuth2.Responses.TokenResponse-gmail");
-                System.IO.File.Delete(credPath);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-
             var credentials = GetGoogleApiCredential();
             var token = credentials.Token.AccessToken;
             credentials.Flow.RevokeTokenAsync(credentials.UserId, token, CancellationToken.None);
+
+            // delete cashed credentials
+            var currDir = Directory.GetCurrentDirectory();
+            string credPath = Path.Join(currDir, "Google.Apis.Auth.OAuth2.Responses.TokenResponse-gmail");
+            System.IO.File.Delete(credPath);
         }
 
         public static IEnumerable<File> GetSpreadsheet()
