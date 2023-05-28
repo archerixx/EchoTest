@@ -2,6 +2,7 @@
 @using Domain.Dto;
 @using Microsoft.Extensions.Configuration;
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 @inject IConfiguration Configuration
 
 <PageTitle>SheetToDoc</PageTitle>
@@ -74,7 +75,7 @@ else
     private string? selectedSheet = string.Empty;
     private string? googleDocUrl;
     private bool isGenerating = false;
-    private IEnumerable<SpreadSheetDto>? spreadsheets;
+    private List<SpreadSheetDto>? spreadsheets;
     private string? apiUrl;
 
     // input
@@ -105,8 +106,17 @@ else
     {
         apiUrl = Configuration.GetSection("BaseUrl:Api").Value;
 
-        spreadsheets = await Http.GetFromJsonAsync<IEnumerable<SpreadSheetDto>>($"{apiUrl}/Document/GoogleSheet");
-        selectedSheet = spreadsheets?.FirstOrDefault()?.Id; // Set the initial selected value here
+        try
+        {
+            spreadsheets = await Http.GetFromJsonAsync<List<SpreadSheetDto>>($"{apiUrl}/Document/GoogleSheet");
+            selectedSheet = spreadsheets?.FirstOrDefault()?.Id; // Set the initial selected value here
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            // Redirect to the home page after 60 seconds of timeout
+            NavigationManager.NavigateTo("/");
+        }
     }
 
     // generate docs

@@ -11,7 +11,8 @@ namespace Web.Controllers
         [HttpGet("google-login")]
         public IActionResult GoogleSignIn()
         {
-            var properties = new AuthenticationProperties() { 
+            var properties = new AuthenticationProperties()
+            {
                 RedirectUri = "/Auth/parse-token"
             };
 

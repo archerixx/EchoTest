@@ -1,6 +1,6 @@
-﻿using Domain.Dto;
-using Api.HelperMethods;
+﻿using Api.HelperMethods;
 using Api.Interfaces;
+using Domain.Dto;
 using Google.Apis.Sheets.v4.Data;
 
 namespace Api.Services
@@ -28,7 +28,8 @@ namespace Api.Services
         public IEnumerable<SpreadSheetDto> GetGoogleSheet()
         {
             var sheetFiles = GoogleApiHelper.GetSpreadsheet();
-            return sheetFiles.Select(sf => new SpreadSheetDto { 
+            return sheetFiles.Select(sf => new SpreadSheetDto
+            {
                 Id = sf.Id,
                 Name = sf.Name
             });

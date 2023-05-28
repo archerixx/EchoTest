@@ -117,7 +117,6 @@ namespace Api.HelperMethods
 
             request.Fields = "id";
             var response = request.Upload();
-
             if (response.Status == UploadStatus.Failed)
                 return string.Empty;
 

@@ -1,11 +1,11 @@
-﻿using Google.Apis.Sheets.v4.Data;
+﻿using Api.Models;
+using Google.Apis.Sheets.v4.Data;
 using NPOI.OpenXmlFormats.Wordprocessing;
 using NPOI.Util;
 using NPOI.XWPF.UserModel;
 using System.Drawing;
-using Word = Microsoft.Office.Interop.Word;
-using Api.Models;
 using Sheet = Google.Apis.Sheets.v4.Data.Sheet;
+using Word = Microsoft.Office.Interop.Word;
 
 namespace Api.HelperMethods
 {
@@ -15,7 +15,7 @@ namespace Api.HelperMethods
         {
             // Since Image does not exist inside Excel, has to be either picked up from internet from URL or from local drive
             var imageData = GetImageData("CompanyName.png");
-            
+
             MemoryStream mainStream = new MemoryStream();
             using (MemoryStream sw = new MemoryStream())
             //using (FileStream sw = File.Create(filePath))
@@ -184,7 +184,7 @@ namespace Api.HelperMethods
             // table
             var table = document.CreateTable(tableRowDataList.Count(), columns);
             table.SetCellMargins(100, 100, 100, 100);
-            
+
             // this part does not seem to be recognized by Google docs
             var tblLayout = table.GetCTTbl().tblPr.AddNewTblLayout();
             tblLayout.type = ST_TblLayoutType.@fixed;

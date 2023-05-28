@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +14,8 @@ builder.Services.AddScoped(sp =>
     var navigationManager = sp.GetRequiredService<NavigationManager>();
     var httpClient = new HttpClient
     {
-        BaseAddress = new Uri(navigationManager.BaseUri)
+        BaseAddress = new Uri(navigationManager.BaseUri),
+        Timeout = TimeSpan.FromMilliseconds(60000)
     };
     return httpClient;
 });
