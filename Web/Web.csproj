@@ -6,8 +6,27 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+	<ItemGroup>
+		<COMReference Include="Microsoft.Office.Interop.Word">
+			<WrapperTool>tlbimp</WrapperTool>
+			<VersionMinor>7</VersionMinor>
+			<VersionMajor>8</VersionMajor>
+			<Guid>00020905-0000-0000-c000-000000000046</Guid>
+			<Lcid>0</Lcid>
+			<Isolated>false</Isolated>
+			<EmbedInteropTypes>true</EmbedInteropTypes>
+		</COMReference>
+	</ItemGroup>
+
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth.AspNetCore3" Version="1.60.0" />
+    <PackageReference Include="Google.Apis.Auth.Mvc" Version="1.60.0" />
+    <PackageReference Include="Google.Apis.Plus.v1" Version="1.49.0.1627" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
+	<PackageReference Include="Google.Apis.Docs.v1" Version="1.60.0.2979" />
+	<PackageReference Include="Google.Apis.Drive.v3" Version="1.60.0.3061" />
+	<PackageReference Include="Google.Apis.Sheets.v4" Version="1.60.0.2979" />
+	<PackageReference Include="NPOI" Version="2.6.0" />
   </ItemGroup>
 
     <ItemGroup>

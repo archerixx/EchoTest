@@ -9,11 +9,11 @@ using Google.Apis.Upload;
 using Google.Apis.Util.Store;
 using File = Google.Apis.Drive.v3.Data.File;
 
-namespace Api.HelperMethods
+namespace Web.HelperMethods
 {
     public class GoogleApiHelper
     {
-        private static UserCredential GetGoogleApiCredential()
+        public static UserCredential GetGoogleApiCredential()
         {
             using (var stream = new FileStream("client_web.json", FileMode.Open, FileAccess.Read))
             {

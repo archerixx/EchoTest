@@ -4,10 +4,10 @@ using NPOI.Util;
 using NPOI.XWPF.UserModel;
 using System.Drawing;
 using Word = Microsoft.Office.Interop.Word;
-using Api.Models;
+using Web.Models;
 using Sheet = Google.Apis.Sheets.v4.Data.Sheet;
 
-namespace Api.HelperMethods
+namespace Web.HelperMethods
 {
     public class GenerateWordHelper
     {

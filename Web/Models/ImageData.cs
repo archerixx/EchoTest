@@ -1,6 +1,6 @@
 ﻿using NPOI.XWPF.UserModel;
 
-namespace Api.Models
+namespace Web.Models
 {
     public class ImageData
     {

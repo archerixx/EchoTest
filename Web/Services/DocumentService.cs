@@ -1,9 +1,9 @@
 ﻿using Domain.Dto;
-using Api.HelperMethods;
-using Api.Interfaces;
+using Web.HelperMethods;
+using Web.Interfaces;
 using Google.Apis.Sheets.v4.Data;
 
-namespace Api.Services
+namespace Web.Services
 {
     public class DocumentService : IDocumentService
     {

@@ -1,6 +1,6 @@
 ﻿using Domain.Dto;
 
-namespace Api.Interfaces
+namespace Web.Interfaces
 {
     public interface IDocumentService
     {

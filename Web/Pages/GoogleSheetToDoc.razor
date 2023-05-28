@@ -1,11 +1,6 @@
 ﻿@page "/GoogleSheetToDocs"
 @using Domain.Dto;
-@using Microsoft.Extensions.Configuration;
-@using Microsoft.AspNetCore.Http;
-@using System.Net.Http.Headers;
 @inject HttpClient Http
-@inject IConfiguration Configuration
-@inject IHttpContextAccessor ContextAccessor
 
 <PageTitle>SheetToDoc</PageTitle>
 
@@ -77,7 +72,7 @@ else
     private string? selectedSheet = string.Empty;
     private string? googleDocUrl;
     private bool isGenerating = false;
-    private IEnumerable<SpreadSheetDto>? spreadsheets;
+    private IEnumerable<SpreadSheetDto>? spreadsheets = new List<SpreadSheetDto>();
     private string? apiUrl;
 
     // input
@@ -106,13 +101,9 @@ else
     // onInit select spreadsheet
     protected override async Task OnInitializedAsync()
     {
-        apiUrl = Configuration.GetSection("BaseUrl:Api").Value;
 
-        var token = ContextAccessor.HttpContext.Request.Cookies["MyCookie"];
-
-        Http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-        spreadsheets = await Http.GetFromJsonAsync<IEnumerable<SpreadSheetDto>>($"{apiUrl}/Document/GoogleSheet");
+        spreadsheets = await Http.GetFromJsonAsync<IEnumerable<SpreadSheetDto>>("https://localhost:7197/Document/GoogleSheet");
+        Console.WriteLine(spreadsheets);
         selectedSheet = spreadsheets?.FirstOrDefault()?.Id; // Set the initial selected value here
     }
 
@@ -123,11 +114,7 @@ else
         StateHasChanged(); // Trigger UI update
 
         var sharedWith = String.Join(",", tags);
-        var token = ContextAccessor.HttpContext.Request.Cookies["MyCookie"];
-
-        Http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-        var documentId = await Http.GetStringAsync($"{apiUrl}/Document/GenerateGoogleDoc?googleSheetUrl={selectedSheet}&shareWith={sharedWith}");
+        var documentId = await Http.GetStringAsync($"https://localhost:7197/Document/GenerateGoogleDoc?googleSheetUrl={selectedSheet}&shareWith={sharedWith}");
         googleDocUrl = GeneratedDocsUrl(documentId);
     }
 

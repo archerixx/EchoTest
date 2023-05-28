@@ -15,11 +15,15 @@
       "https://echodocument-web.azurewebsites.net/authorize/",
       "https://echodocument-api.azurewebsites.net/authorize/",
       "https://echodocument-api.azurewebsites.net/singin-google",
-      "https://echodocument-web.azurewebsites.net/singin-google"
+      "https://echodocument-web.azurewebsites.net/singin-google",
+      "https://localhost:7197/signin-google",
+      "https://localhost:7197/.auth/login/google/callback",
+      "https://localhost:7197/authorize/"
     ],
     "javascript_origins": [
       "https://echodocument-api.azurewebsites.net",
-      "https://echodocument-web.azurewebsites.net"
+      "https://echodocument-web.azurewebsites.net",
+      "https://localhost:7197"
     ]
   }
 }
